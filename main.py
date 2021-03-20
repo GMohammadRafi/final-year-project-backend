@@ -303,4 +303,4 @@ def sending_sms(otp_user_data: OTP = None, user_details: User = None):
 
 
 if __name__ == "__main__":
-    app.run(debug=True)
+    app.run()
