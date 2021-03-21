@@ -287,7 +287,6 @@ def sending_sms(otp_user_data: OTP = None, user_details: User = None):
         'Cache-Control': "no-cache",
     }
     response = requests.request("POST", SMS_URL, data=payload, headers=headers)
-    print(response.status_code)
     if 100 < response.status_code < 300:
         db.session.commit()
     else:
