@@ -242,6 +242,7 @@ def sending_mail(otp_user_data=None, user_details=None):
         meg = f'Subject: {sub}\n\n{body}'
         connection.sendmail(SENDER_EMAIL, email, meg)
         status_code, _ = connection.noop()
+        print(connection.noop())
         if 100 > status_code < 300:
             db.session.commit()
         else:
