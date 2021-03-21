@@ -149,7 +149,7 @@ def send_otp():
 @app.route('/user/resend-otp', methods=["POST"])
 def resend_otp():
     otp_id = request.form.get('otp_id')
-    sent_to = request.form.get('sent_to')
+    sent_to = request.form.get('through')
     result = OTP.query.filter_by(id=otp_id).first()
     if sent_to == 'mail':
         return sending_mail(otp_user_data=result)
@@ -250,7 +250,8 @@ def sending_mail(otp_user_data=None, user_details=None):
             }
     return {
         "otp_id": uid,
-        "sent_to": "mail"
+        "sent_to": str(email),
+        "through": "sms"
     }
 
 
@@ -296,7 +297,8 @@ def sending_sms(otp_user_data: OTP = None, user_details: User = None):
         }
     return {
         "otp_id": uid,
-        "sent_to": "sms"
+        "sent_to": str(phone_number),
+        "through": "sms"
     }
 
 
