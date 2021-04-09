@@ -24,13 +24,29 @@ class User(db.Model):
     password = db.Column(db.String(300), nullable=False)
 
 
+class Conductor(db.Model):
+    __tablename__ = 'Conductor'
+    id = db.Column(db.String(100), primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(150), nullable=False)
+    phone_number = db.Column(db.String(10), nullable=False)
+    password = db.Column(db.String(300), nullable=False)
+
+
 class OTP(db.Model):
     __tablename__ = 'OTP'
     id = db.Column(db.String(100), primary_key=True)
-    user_id = db.Column(db.String(100), ForeignKey('User.id'))
+    user_id = db.Column(db.String(100), ForeignKey('User.id'), ForeignKey('Conductor.id'))
     sent_to = db.Column(db.String(100), nullable=False)
     expiry_time = db.Column(db.String(150), nullable=False)
     otp = db.Column(db.String(4), nullable=False)
+
+
+class Feedback(db.Model):
+    __tablename__ = 'Feedback'
+    id = db.Column(db.String(100), primary_key=True)
+    user_id = db.Column(db.String(100), ForeignKey('User.id'))
+    feedback_data = db.Column(db.String(500), nullable=False)
 
 
 SENDER_EMAIL = environ.get('SENDER_EMAIL')
@@ -52,19 +68,75 @@ def generate_id(table_data: db.Model):
         generate_id(table_data)
 
 
-@app.route('/user/login', methods=["POST"])
-def login():
-    args = {
-        "email": request.form.get('email'),
-        "password": request.form.get('password')
-    }
-    result = User.query.filter_by(email=args['email']).first()
+@app.route('/')
+def root():
+    return {'Application': 'MY BMTC'}
+
+
+@app.route('/<user_type>/register', methods=["POST"])
+def register(user_type):
+    if "user" == user_type:
+        uid = generate_id(User)
+    else:
+        uid = request.form.get('id')
+    name = request.form.get('name')
+    email = request.form.get('email')
+    phone_number = request.form.get('phone_number')
+    password = request.form.get('password')
+    if "user" == user_type:
+        result = User.query.filter_by(email=email).first()
+    else:
+        result = Conductor.query.filter_by(email=email).first()
+    if result:
+        return {
+            "error": 300,
+            "message": "user already exist"
+        }
+    else:
+        hash_and_salted_password = generate_password_hash(
+            password,
+            method='pbkdf2:sha256',
+            salt_length=8
+        )
+        if "user" == user_type:
+            user_data = User(id=uid,
+                             name=name,
+                             email=email,
+                             phone_number=phone_number,
+                             password=hash_and_salted_password,
+                             )
+        else:
+            user_data = Conductor(id=uid,
+                                  name=name,
+                                  email=email,
+                                  phone_number=phone_number,
+                                  password=hash_and_salted_password,
+                                  )
+        db.session.add(user_data)
+        db.session.commit()
+        return {
+            "user_id": uid,
+            "phone_number": phone_number,
+            "name": name,
+            "email": email,
+            "session_time": SESSION_TIME
+        }
+
+
+@app.route('/<user_type>/login', methods=["POST"])
+def login(user_type):
+    email = request.form.get('email')
+    password = request.form.get('password')
+    if "user" == user_type:
+        result = User.query.filter_by(email=email).first()
+    else:
+        result = Conductor.query.filter_by(email=email).first()
     if not result:
         return {
             "error": 300,
             "message": "user do not exist"
         }
-    elif check_password_hash(result.password, args['password']):
+    elif check_password_hash(result.password, password):
         return {
             "user_id": result.id,
             "phone_number": result.phone_number,
@@ -79,53 +151,31 @@ def login():
         }
 
 
-@app.route('/')
-def root():
-    return {'Application': 'MY BMTC'}
-
-
-@app.route('/user/register', methods=["POST"])
-def register():
-    name = request.form.get('name')
-    email = request.form.get('email')
-    phone_number = request.form.get('phone_number')
-    password = request.form.get('password')
-    result = User.query.filter_by(email=email).first()
-    if result:
-        return {
-            "error": 300,
-            "message": "user already exist"
-        }
-    else:
-        hash_and_salted_password = generate_password_hash(
-            password,
-            method='pbkdf2:sha256',
-            salt_length=8
-        )
-        uid = generate_id(User)
-        user_data = User(id=uid,
-                         name=name,
-                         email=email,
-                         phone_number=phone_number,
-                         password=hash_and_salted_password,
+@app.route('/user/feedback', methods=["POST"])
+def feedback():
+    user_id = request.form.get('user_id')
+    user_feedback = request.form.get('feedback')
+    uid = generate_id(Feedback)
+    user_data = Feedback(id=uid,
+                         user_id=user_id,
+                         feedback_data=user_feedback
                          )
-        db.session.add(user_data)
-        db.session.commit()
-        return {
-            "user_id": uid,
-            "phone_number": phone_number,
-            "name": name,
-            "email": email,
-            "session_time": SESSION_TIME
-        }
+    db.session.add(user_data)
+    db.session.commit()
+    return {
+        "id": uid,
+    }
 
 
-@app.route('/user/send-otp', methods=["POST"])
-def send_otp():
+@app.route('/<user_type>/send-otp', methods=["POST"])
+def send_otp(user_type):
     user_data = request.form.get('user_data')
     if user_data.isnumeric():
         #     phone number
-        result = User.query.filter_by(phone_number=str(user_data)).first()
+        if "user" == user_type:
+            result = User.query.filter_by(phone_number=str(user_data)).first()
+        else:
+            result = Conductor.query.filter_by(phone_number=str(user_data)).first()
         if not result:
             return {
                 "error": 300,
@@ -135,7 +185,10 @@ def send_otp():
             return sending_sms(user_details=result)
     else:
         # mail id
-        result = User.query.filter_by(email=user_data).first()
+        if "user" == user_type:
+            result = User.query.filter_by(email=user_data).first()
+        else:
+            result = Conductor.query.filter_by(email=user_data).first()
         if not result:
             return {
                 "error": 300,
@@ -146,8 +199,8 @@ def send_otp():
             return sending_mail(user_details=result)
 
 
-@app.route('/user/resend-otp', methods=["POST"])
-def resend_otp():
+@app.route('/<user_type>/resend-otp', methods=["POST"])
+def resend_otp(user_type):
     otp_id = request.form.get('otp_id')
     sent_to = request.form.get('through')
     result = OTP.query.filter_by(id=otp_id).first()
@@ -157,12 +210,15 @@ def resend_otp():
         return sending_sms(otp_user_data=result)
 
 
-@app.route('/user/verify-otp', methods=["POST"])
-def verify_otp():
+@app.route('/<user_type>/verify-otp', methods=["POST"])
+def verify_otp(user_type):
     otp_id = request.form.get('otp_id')
     otp = request.form.get('otp')
     otp_data: OTP = OTP.query.filter_by(id=otp_id).first()
-    user_data: User = User.query.filter_by(id=otp_data.user_id).first()
+    if "user" == user_type:
+        user_data = User.query.filter_by(id=otp_data.user_id).first()
+    else:
+        user_data = Conductor.query.filter_by(id=otp_data.user_id).first()
     current_time = datetime.datetime.now()
     if str(current_time) < otp_data.expiry_time:
         if str(otp) == otp_data.otp:
@@ -185,11 +241,14 @@ def verify_otp():
         }
 
 
-@app.route('/user/change-password', methods=["POST"])
-def change_password():
+@app.route('/<user_type>/change-password', methods=["POST"])
+def change_password(user_type):
     user_id = request.form.get('user_id')
     password = request.form.get('password')
-    result: User = User.query.filter_by(id=user_id).first()
+    if "user" == user_type:
+        result = User.query.filter_by(id=user_id).first()
+    else:
+        result = Conductor.query.filter_by(id=user_id).first()
     if not result:
         return {
             "error": 300,
@@ -303,4 +362,4 @@ def sending_sms(otp_user_data: OTP = None, user_details: User = None):
 
 
 if __name__ == "__main__":
-    app.run()
+    app.run(debug=True)
