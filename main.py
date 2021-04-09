@@ -217,9 +217,9 @@ def resend_otp(user_type):
     else:
         result = ConductorOTP.query.filter_by(id=otp_id).first()
     if sent_to == 'mail':
-        return sending_mail(otp_user_data=result)
+        return sending_mail(user_type,otp_user_data=result)
     else:
-        return sending_sms(otp_user_data=result)
+        return sending_sms(user_type,otp_user_data=result)
 
 
 @app.route('/<user_type>/verify-otp', methods=["POST"])
