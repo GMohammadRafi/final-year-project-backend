@@ -33,10 +33,19 @@ class Conductor(db.Model):
     password = db.Column(db.String(300), nullable=False)
 
 
-class OTP(db.Model):
-    __tablename__ = 'OTP'
+class UserOTP(db.Model):
+    __tablename__ = 'UserOTP'
     id = db.Column(db.String(100), primary_key=True)
-    user_id = db.Column(db.String(100), ForeignKey('User.id'), ForeignKey('Conductor.id'))
+    user_id = db.Column(db.String(100), ForeignKey('User.id'))
+    sent_to = db.Column(db.String(100), nullable=False)
+    expiry_time = db.Column(db.String(150), nullable=False)
+    otp = db.Column(db.String(4), nullable=False)
+
+
+class ConductorOTP(db.Model):
+    __tablename__ = 'ConductorOTP'
+    id = db.Column(db.String(100), primary_key=True)
+    user_id = db.Column(db.String(100), ForeignKey('Conductor.id'))
     sent_to = db.Column(db.String(100), nullable=False)
     expiry_time = db.Column(db.String(150), nullable=False)
     otp = db.Column(db.String(4), nullable=False)
@@ -182,7 +191,7 @@ def send_otp(user_type):
                 "message": "user do not exist or phone number entered is wrong the phone number should be only 10 digit"
             }
         else:
-            return sending_sms(user_details=result)
+            return sending_sms(user_type, user_details=result)
     else:
         # mail id
         if "user" == user_type:
@@ -196,14 +205,17 @@ def send_otp(user_type):
                            "entered then it should be only 10 digit"
             }
         else:
-            return sending_mail(user_details=result)
+            return sending_mail(user_type, user_details=result)
 
 
 @app.route('/<user_type>/resend-otp', methods=["POST"])
 def resend_otp(user_type):
     otp_id = request.form.get('otp_id')
     sent_to = request.form.get('through')
-    result = OTP.query.filter_by(id=otp_id).first()
+    if "user" == user_type:
+        result = UserOTP.query.filter_by(id=otp_id).first()
+    else:
+        result = ConductorOTP.query.filter_by(id=otp_id).first()
     if sent_to == 'mail':
         return sending_mail(otp_user_data=result)
     else:
@@ -214,10 +226,11 @@ def resend_otp(user_type):
 def verify_otp(user_type):
     otp_id = request.form.get('otp_id')
     otp = request.form.get('otp')
-    otp_data: OTP = OTP.query.filter_by(id=otp_id).first()
     if "user" == user_type:
+        otp_data = UserOTP.query.filter_by(id=otp_id).first()
         user_data = User.query.filter_by(id=otp_data.user_id).first()
     else:
+        otp_data = ConductorOTP.query.filter_by(id=otp_id).first()
         user_data = Conductor.query.filter_by(id=otp_data.user_id).first()
     current_time = datetime.datetime.now()
     if str(current_time) < otp_data.expiry_time:
@@ -267,7 +280,7 @@ def change_password(user_type):
         }
 
 
-def sending_mail(otp_user_data=None, user_details=None):
+def sending_mail(user_type, otp_user_data=None, user_details=None):
     otp = randint(1111, 9999)
     current_time = datetime.datetime.now()
     ten_min = datetime.timedelta(minutes=10)
@@ -278,17 +291,25 @@ def sending_mail(otp_user_data=None, user_details=None):
         otp_user_data.otp = str(otp)
         otp_user_data.expiry_time = str(future_time)
     else:
-        uid = generate_id(OTP)
         user_id = user_details.id
         email = user_details.email
-        otp_user_data = OTP(id=uid,
-                            sent_to=user_details.email,
-                            expiry_time=str(future_time),
-                            user_id=user_id,
-                            otp=str(otp)
-                            )
+        if "user" == user_type:
+            uid = generate_id(UserOTP)
+            otp_user_data = UserOTP(id=uid,
+                                    sent_to=user_details.email,
+                                    expiry_time=str(future_time),
+                                    user_id=user_id,
+                                    otp=str(otp)
+                                    )
+        else:
+            uid = generate_id(ConductorOTP)
+            otp_user_data = ConductorOTP(id=uid,
+                                         sent_to=user_details.email,
+                                         expiry_time=str(future_time),
+                                         user_id=user_id,
+                                         otp=str(otp)
+                                         )
         db.session.add(otp_user_data)
-
     with smtplib.SMTP("smtp.gmail.com") as connection:
         connection.ehlo()
         connection.starttls()
@@ -314,7 +335,7 @@ def sending_mail(otp_user_data=None, user_details=None):
     }
 
 
-def sending_sms(otp_user_data: OTP = None, user_details: User = None):
+def sending_sms(user_type, otp_user_data=None, user_details: User = None):
     otp = randint(1111, 9999)
     current_time = datetime.datetime.now()
     ten_min = datetime.timedelta(minutes=10)
@@ -325,15 +346,24 @@ def sending_sms(otp_user_data: OTP = None, user_details: User = None):
         otp_user_data.otp = str(otp)
         otp_user_data.expiry_time = str(future_time)
     else:
-        uid = generate_id(OTP)
         user_id = user_details.id
         phone_number = user_details.phone_number
-        otp_user_data = OTP(id=uid,
-                            sent_to=str(phone_number),
-                            expiry_time=str(future_time),
-                            user_id=user_id,
-                            otp=str(otp)
-                            )
+        if "user" == user_type:
+            uid = generate_id(UserOTP)
+            otp_user_data = UserOTP(id=uid,
+                                    sent_to=str(phone_number),
+                                    expiry_time=str(future_time),
+                                    user_id=user_id,
+                                    otp=str(otp)
+                                    )
+        else:
+            uid = generate_id(ConductorOTP)
+            otp_user_data = ConductorOTP(id=uid,
+                                         sent_to=str(phone_number),
+                                         expiry_time=str(future_time),
+                                         user_id=user_id,
+                                         otp=str(otp)
+                                         )
         db.session.add(otp_user_data)
 
     sub = 'OTP Verification for MY BMTC APP'
