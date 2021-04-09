@@ -310,7 +310,7 @@ def sending_mail(otp_user_data=None, user_details=None):
     return {
         "otp_id": uid,
         "sent_to": str(email),
-        "through": "sms"
+        "through": "mail"
     }
 
 
