@@ -17,7 +17,7 @@ db = SQLAlchemy(app)
 
 class User(db.Model):
     __tablename__ = 'User'
-    id = db.Column(db.String(100), primary_key=True)
+    id = db.Column(db.String(32), primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(150), nullable=False)
     phone_number = db.Column(db.String(10), nullable=False)
@@ -26,7 +26,7 @@ class User(db.Model):
 
 class Conductor(db.Model):
     __tablename__ = 'Conductor'
-    id = db.Column(db.String(100), primary_key=True)
+    id = db.Column(db.String(32), primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     email = db.Column(db.String(150), nullable=False)
     phone_number = db.Column(db.String(10), nullable=False)
@@ -35,7 +35,7 @@ class Conductor(db.Model):
 
 class UserOTP(db.Model):
     __tablename__ = 'UserOTP'
-    id = db.Column(db.String(100), primary_key=True)
+    id = db.Column(db.String(32), primary_key=True)
     user_id = db.Column(db.String(100), ForeignKey('User.id'))
     sent_to = db.Column(db.String(100), nullable=False)
     expiry_time = db.Column(db.String(150), nullable=False)
