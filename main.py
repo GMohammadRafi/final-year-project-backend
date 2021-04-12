@@ -44,7 +44,7 @@ class UserOTP(db.Model):
 
 class ConductorOTP(db.Model):
     __tablename__ = 'ConductorOTP'
-    id = db.Column(db.String(100), primary_key=True)
+    id = db.Column(db.String(32), primary_key=True)
     user_id = db.Column(db.String(100), ForeignKey('Conductor.id'))
     sent_to = db.Column(db.String(100), nullable=False)
     expiry_time = db.Column(db.String(150), nullable=False)
@@ -53,7 +53,7 @@ class ConductorOTP(db.Model):
 
 class Feedback(db.Model):
     __tablename__ = 'Feedback'
-    id = db.Column(db.String(100), primary_key=True)
+    id = db.Column(db.String(32), primary_key=True)
     user_id = db.Column(db.String(100), ForeignKey('User.id'))
     feedback_data = db.Column(db.String(500), nullable=False)
 
@@ -217,9 +217,9 @@ def resend_otp(user_type):
     else:
         result = ConductorOTP.query.filter_by(id=otp_id).first()
     if sent_to == 'mail':
-        return sending_mail(user_type,otp_user_data=result)
+        return sending_mail(user_type, otp_user_data=result)
     else:
-        return sending_sms(user_type,otp_user_data=result)
+        return sending_sms(user_type, otp_user_data=result)
 
 
 @app.route('/<user_type>/verify-otp', methods=["POST"])
