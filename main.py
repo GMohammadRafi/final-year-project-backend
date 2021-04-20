@@ -98,9 +98,8 @@ def register(user_type):
         result = Conductor.query.filter_by(email=email).first()
     if result:
         return {
-            "error": 300,
             "message": "user already exist"
-        }
+        }, 409
     else:
         hash_and_salted_password = generate_password_hash(
             password,
@@ -142,9 +141,8 @@ def login(user_type):
         result = Conductor.query.filter_by(email=email).first()
     if not result:
         return {
-            "error": 300,
             "message": "user do not exist"
-        }
+        }, 303
     elif check_password_hash(result.password, password):
         return {
             "user_id": result.id,
@@ -155,9 +153,8 @@ def login(user_type):
         }
     else:
         return {
-            "error": 300,
             "message": "Entered Password is wrong"
-        }
+        }, 403
 
 
 @app.route('/user/feedback', methods=["POST"])
@@ -187,9 +184,8 @@ def send_otp(user_type):
             result = Conductor.query.filter_by(phone_number=str(user_data)).first()
         if not result:
             return {
-                "error": 300,
                 "message": "user do not exist or phone number entered is wrong the phone number should be only 10 digit"
-            }
+            }, 403
         else:
             return sending_sms(user_type, user_details=result)
     else:
@@ -200,10 +196,9 @@ def send_otp(user_type):
             result = Conductor.query.filter_by(email=user_data).first()
         if not result:
             return {
-                "error": 300,
                 "message": "user do not exist because email or phone number entered is wrong, \n if phone number is "
                            "entered then it should be only 10 digit"
-            }
+            }, 403
         else:
             return sending_mail(user_type, user_details=result)
 
@@ -243,15 +238,13 @@ def verify_otp(user_type):
             }
         else:
             return {
-                "error": 300,
                 "message": "Please enter a proper OTP"
-            }
+            }, 403
     else:
         sending_mail(otp_user_data=otp_data)
         return {
-            "error": 300,
             "message": "Time Expired Resend The OTP"
-        }
+        }, 410
 
 
 @app.route('/<user_type>/change-password', methods=["POST"])
@@ -264,9 +257,8 @@ def change_password(user_type):
         result = Conductor.query.filter_by(id=user_id).first()
     if not result:
         return {
-            "error": 300,
             "message": "User Does not Exist"
-        }
+        }, 303
     else:
         hash_and_salted_password = generate_password_hash(
             password,
@@ -325,9 +317,8 @@ def sending_mail(user_type, otp_user_data=None, user_details=None):
             db.session.commit()
         else:
             return {
-                "error": 300,
                 "message": "Something Went Wrong!"
-            }
+            }, 501
     return {
         "otp_id": uid,
         "sent_to": str(email),
@@ -381,9 +372,8 @@ def sending_sms(user_type, otp_user_data=None, user_details: User = None):
         db.session.commit()
     else:
         return {
-            "error": 300,
             "message": "Something Went Wrong!"
-        }
+        }, 501
     return {
         "otp_id": uid,
         "sent_to": str(phone_number),
