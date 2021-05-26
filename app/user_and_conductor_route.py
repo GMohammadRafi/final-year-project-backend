@@ -68,8 +68,8 @@ def login(user_type):
         result = cd.Conductor.query.filter_by(email=email).first()
     if not result:
         return {
-                   "message": "user do not exist"
-               }, 303
+                   "message": "User Do Not Exist"
+               }, 403
     elif check_password_hash(result.password, password):
         return {
             "user_id": result.id,
@@ -214,11 +214,14 @@ def sending_mail(user_type, otp_user_data=None, user_details=None):
                                             otp=str(otp)
                                             )
         db.session.add(otp_user_data)
-    with smtplib.SMTP("smtp.gmail.com") as connection:
+    # print(c.SENDER_EMAIL)
+    # print(c.SENDER_PASSWORD)
+    # print(email)
+    with smtplib.SMTP(host="smtp.gmail.com") as connection:
         connection.ehlo()
         connection.starttls()
         connection.ehlo()
-
+        print(connection.default_port)
         connection.login(user=c.SENDER_EMAIL, password=c.SENDER_PASSWORD)
         sub = 'OTP Verification for MY BMTC APP'
         body = f'Your OTP pin code is displayed below:\nYour  OTP will be expired in 10 minutes \n  Your OTP is {otp} '
