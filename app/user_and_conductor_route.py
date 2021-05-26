@@ -214,14 +214,7 @@ def sending_mail(user_type, otp_user_data=None, user_details=None):
                                             otp=str(otp)
                                             )
         db.session.add(otp_user_data)
-    # print(c.SENDER_EMAIL)
-    # print(c.SENDER_PASSWORD)
-    # print(email)
-    with smtplib.SMTP(host="smtp.gmail.com") as connection:
-        connection.ehlo()
-        connection.starttls()
-        connection.ehlo()
-        print(connection.default_port)
+    with smtplib.SMTP_SSL("smtp.gmail.com", 465) as connection:
         connection.login(user=c.SENDER_EMAIL, password=c.SENDER_PASSWORD)
         sub = 'OTP Verification for MY BMTC APP'
         body = f'Your OTP pin code is displayed below:\nYour  OTP will be expired in 10 minutes \n  Your OTP is {otp} '

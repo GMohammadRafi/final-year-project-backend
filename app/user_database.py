@@ -20,20 +20,6 @@ class UserOTP(db.Model):
     otp = db.Column(db.String(4), nullable=False)
 
 
-class BookTicket(db.Model):
-    __tablename__ = 'BookTicket'
-    id = db.Column(db.String(32), primary_key=True)
-    booked_user_id = db.Column(db.String(32), primary_key=True)
-    bus_no = db.Column(db.String(100), nullable=False)
-    starting_bus_stop = db.Column(db.String(100), nullable=False)
-    end_bus_stop = db.Column(db.String(100), nullable=False)
-    starting_bus_timing = db.Column(db.String(100), nullable=False)
-    timings_and_no_of_stop = db.Column(db.String(100), nullable=False)
-    face_id = db.Column(db.JSON(), nullable=False)
-    payment_states = db.Column(db.Boolean, nullable=False)
-
-
-
 class Feedback(db.Model):
     __tablename__ = 'Feedback'
     id = db.Column(db.String(32), primary_key=True)

@@ -1,21 +1,18 @@
 import time
-import os
 from app import app
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.chrome.options import Options
 
 user_need_details = {}
 
 
 def get_url_setting_to_loc(from_loc_lat, from_loc_long, to_loc_lat, to_loc_long):
-    chrome_options = webdriver.ChromeOptions()
-    chrome_options.binary_location = os.environ.get(
-        "GOOGLE_CHROME_BIN") or "C:/Program Files/Google/Chrome/Application/chrome.exe"
+    chrome_options = Options()
+    chrome_options.add_argument("--disable-extensions")
+    chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--headless")
-    chrome_options.add_argument("--disable-dev-shm-usage")
-    chrome_options.add_argument("--no-sandbox")
-    driver = webdriver.Chrome(executable_path=os.environ.get("CHROMEDRIVER_PATH") or "chromedriver.exe",
-                              chrome_options=chrome_options)
+    driver = webdriver.Chrome("chromedriver.exe", chrome_options=chrome_options)
     driver.get(
         f"https://www.google.com/maps/dir/'{from_loc_lat},{from_loc_long}'/'{to_loc_lat},{to_loc_long}'/@13.1604339,77.6366039,15z/am=t/data=!4m10!4m9!1m3!2m2!1d77.6366039!2d13.1604339!1m3!2m2!1d{to_loc_long}!2d{to_loc_lat}!3e3")
     get_user_details_from_website(driver)
@@ -34,11 +31,10 @@ def get_user_details_from_website(driver):
 
     try:
         user_need_details["toatal_time"] = str(
-            driver.find_element_by_css_selector(".section-layout-root .section-trip-summary h1").text)
+            driver.find_element_by_css_selector(".section-trip-summary-header h1").text)
         user_need_details["cost"] = str(
-            driver.find_elements_by_css_selector(".section-directions-trip-summary "
-                                                 ".section-directions-trip-secondary-text")[1].text)[1:]
-        details = driver.find_element_by_css_selector(".section-layout-root .section-trip-details")
+            driver.find_elements_by_css_selector(".section-directions-trip-secondary-text")[1].text)[1:]
+        details = driver.find_element_by_css_selector(".ykrkG-trip-MZArnb")
         bus_start_timings = details.find_elements_by_css_selector(".transit-stop .directions-mode-group-departure-time")
         locations = details.find_elements_by_css_selector(".transit-stop-details h2")
         timings_no_of_stop = details.find_elements_by_css_selector(".transit-step-details")
@@ -76,13 +72,14 @@ def get_user_details_from_website(driver):
 def getting_iframe(driver):
     def getting_iframe1():
         try:
-            driver.find_elements_by_css_selector(".Tzqkt-T3iPGc-MZArnb-JIbuQc button")[1].click()
+            driver.find_elements_by_css_selector(
+                ".Tzqkt-T3iPGc-MZArnb-JIbuQc button")[1].click()
         except:
             getting_iframe1()
 
     def getting_iframe2():
         try:
-            driver.find_elements_by_css_selector(".section-tab-bar button")[1].click()
+            driver.find_elements_by_css_selector(".s4ghve-AznF2e-ZMv3u button")[1].click()
             user_need_details["iframe"] = str(driver.find_element_by_css_selector("input").get_attribute("value")).replace("\"","'")
             return user_need_details
         except:
