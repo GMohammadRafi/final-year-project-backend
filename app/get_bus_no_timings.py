@@ -1,5 +1,6 @@
 import time
-from app import app
+from os import path
+from app import app, constants as c
 from selenium import webdriver
 from selenium.common.exceptions import NoSuchElementException
 from selenium.webdriver.chrome.options import Options
@@ -12,7 +13,7 @@ def get_url_setting_to_loc(from_loc_lat, from_loc_long, to_loc_lat, to_loc_long)
     chrome_options.add_argument("--disable-extensions")
     chrome_options.add_argument("--disable-gpu")
     chrome_options.add_argument("--headless")
-    driver = webdriver.Chrome("chromedriver.exe", chrome_options=chrome_options)
+    driver = webdriver.Chrome(path.join(c.APP_ROOT, "static/chromedriver.exe"), chrome_options=chrome_options)
     driver.get(
         f"https://www.google.com/maps/dir/'{from_loc_lat},{from_loc_long}'/'{to_loc_lat},{to_loc_long}'/@13.1604339,77.6366039,15z/am=t/data=!4m10!4m9!1m3!2m2!1d77.6366039!2d13.1604339!1m3!2m2!1d{to_loc_long}!2d{to_loc_lat}!3e3")
     get_user_details_from_website(driver)
@@ -101,9 +102,8 @@ def get_bus_no_timings(from_loc_lat, from_loc_long, to_loc_lat, to_loc_long):
                                )
     except:
         return {
-            "error": 300,
             "message": "Something went wrong"
-        }
+        }, 300
     while "iframe" not in user_need_details.keys():
         pass
     return user_need_details

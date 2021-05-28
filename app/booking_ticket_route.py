@@ -1,11 +1,11 @@
-from app import app, generate_ids as gids
+from app import app, generate_ids as gids, constants as c
 from database import book_ticket_database as brd, bus_route_database as busd, user_database as ud, db
 from flask import request
 from os import path, mkdir
 from werkzeug.utils import secure_filename
 import json
 
-APP_ROOT = path.dirname(path.abspath(__file__))
+
 IMAGE_EXTENSIONS = ["JPEG", "JPG", "PNG"]
 
 
@@ -13,7 +13,7 @@ IMAGE_EXTENSIONS = ["JPEG", "JPG", "PNG"]
 def upload_image():
     url = []
     if request.files:
-        target = path.join(APP_ROOT, 'images/')
+        target = path.join(c.APP_ROOT, 'images/')
         if not path.isdir(target):
             mkdir(target)
         file = request.files.get("images")
