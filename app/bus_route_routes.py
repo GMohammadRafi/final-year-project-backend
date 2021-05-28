@@ -1,4 +1,5 @@
-from app import app, db, bus_route_database as brd, generate_ids as gids, bus_stops_database as bsd
+from app import app, generate_ids as gids
+from database import bus_route_database as brd, bus_stops_database as bsd, db
 import json
 
 from flask import request

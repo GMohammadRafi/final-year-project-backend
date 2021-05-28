@@ -1,5 +1,5 @@
 import uuid
-from app import db
+from database import db
 
 
 def generate_id(table_data: db.Model):

@@ -1,8 +1,9 @@
-from app import app, db
+from database import app, db
 
 from flask import request
 from sqlalchemy import and_
-from app import bus_stops_database as bsd, generate_ids as gids
+from app import generate_ids as gids
+from database import bus_stops_database as bsd
 
 LATITUDE = 0.00090053582
 LONGITUDE = 0.00113804251

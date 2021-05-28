@@ -1,4 +1,5 @@
-from app import app, db, user_database as ud, generate_ids as gids
+from app import app, generate_ids as gids
+from database import user_database as ud, db
 
 from flask import request
 

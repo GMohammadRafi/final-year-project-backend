@@ -1,4 +1,5 @@
-from app import app, db, user_database as ud, constants as c, generate_ids as gids, conductor_database as cd
+from app import app, constants as c, generate_ids as gids
+from database import conductor_database as cd, user_database as ud, db
 
 from flask import request
 

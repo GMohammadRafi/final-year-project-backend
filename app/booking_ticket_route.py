@@ -1,5 +1,5 @@
-from app import app, generate_ids as gids, user_database as ud, book_ticket_database as brd, bus_route_database as busd, \
-    db
+from app import app, generate_ids as gids
+from database import book_ticket_database as brd, bus_route_database as busd, user_database as ud, db
 from flask import request
 from os import path, mkdir
 from werkzeug.utils import secure_filename
