@@ -39,6 +39,7 @@ def register(user_type):
                                 email=email,
                                 phone_number=phone_number,
                                 password=hash_and_salted_password,
+                                amount=200,
                                 )
         else:
             user_data = cd.Conductor(id=uid,

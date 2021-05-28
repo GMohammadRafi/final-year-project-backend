@@ -17,3 +17,32 @@ def feedback():
     return {
         "id": uid,
     }
+
+
+@app.route('/user/wallet-amount', methods=["GET"])
+def wallet_amount():
+    user_id = request.form.get('user_id')
+    user_data: ud.User = ud.User.query.filter_by(id=user_id).first()
+    if not user_data:
+        return {
+                   "message": "User Do Not Exist"
+               }, 404
+    return {
+        "amount": user_data.amount,
+    }
+
+
+@app.route('/user/add/wallet-amount', methods=["GET"])
+def add_wallet_amount():
+    user_id = request.form.get('user_id')
+    amount = request.form.get('amount')
+    user_data: ud.User = ud.User.query.filter_by(id=user_id).first()
+    if not user_data:
+        return {
+                   "message": "User Do Not Exist"
+               }, 404
+    user_data.amount = amount
+    db.session.commit()
+    return {
+        "message": "Updated",
+    }

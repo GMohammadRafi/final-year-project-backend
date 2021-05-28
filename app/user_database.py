@@ -9,6 +9,7 @@ class User(db.Model):
     email = db.Column(db.String(150), nullable=False)
     phone_number = db.Column(db.String(10), nullable=False)
     password = db.Column(db.String(300), nullable=False)
+    amount = db.Column(db.Integer, nullable=False)
 
 
 class UserOTP(db.Model):
