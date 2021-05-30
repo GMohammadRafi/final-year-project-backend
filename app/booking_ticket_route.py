@@ -12,6 +12,7 @@ import json
 IMAGE_EXTENSIONS = ["JPEG", "JPG", "PNG"]
 time_zone = timezone('Asia/Kolkata')
 
+
 @app.route('/book-ticket/face-id', methods=["POST"])
 def upload_image():
     url = []
@@ -54,7 +55,7 @@ def book_ticket():
                    "message": "No enough amount in your account"
                }, 404
     for bus_detail in bus_booking_ticket["busFromToDetails"]['bus_details']:
-        t = ticket(bus_detail)
+        t = set_ticket(bus_detail)
         ticket_id.append(t)
     new_book_ticket = brd.BookedTickets(
         id=gids.generate_id(brd.BookedTickets),
@@ -74,11 +75,25 @@ def book_ticket():
     }
 
 
+@app.route('/get/book-ticket/<user_id>', methods=["POST"])
+def get_all_book_ticket(user_id):
+    list_result: list = brd.BookedTickets.query.filter_by(user_id=user_id).all()
+    if not list_result:
+        return {
+                   "message": "user do not exist"
+               }, 409
+
+    return [{
+        "id": result.id,
+        "tickets": [get_ticket(ticket_id) for ticket_id in result.tickets],
+        "amount_payed": result.amount_payed,
+        "booked_date_time": result.booked_date_time,
+        "number_of_tickets": result.number_of_tickets,
+        "toatal_time": result.toatal_time,
+    } for result in list_result]
 
 
-
-
-def ticket(bus_details: dict):
+def set_ticket(bus_details: dict):
     result: busrd.BusRoute = busrd.BusRoute.query.filter_by(
         bus_no=str(bus_details['bus_no']).replace(" ", "").replace("-", "")).first()
     end_bus_stop = bus_details['end_bus_stop']
@@ -125,6 +140,29 @@ def ticket(bus_details: dict):
     db.session.add(user_data)
     db.session.commit()
     return user_data.id
+
+
+def get_ticket(bus_details: str):
+    result: brd.Ticket = brd.Ticket.query.filter_by(id=bus_details).first()
+    bus_no = result.bus_no
+    if not str(result.bus_no).isspace() and len(result.bus_no) == 32:
+        tem: busrd.BusRoute = busrd.BusRoute.query.filter_by(id=bus_no).first()
+        bus_no = tem.bus_no
+    starting_bus_stop = result.starting_bus_stop
+    if not str(result.starting_bus_stop).isspace() and len(result.starting_bus_stop) == 32:
+        tem: busd.BusStops = busd.BusStops.query.filter_by(id=starting_bus_stop).first()
+        starting_bus_stop = tem.bus_stop
+    end_bus_stop = result.end_bus_stop
+    if not str(result.end_bus_stop).isspace() and len(result.end_bus_stop) == 32:
+        tem: busd.BusStops = busd.BusStops.query.filter_by(id=end_bus_stop).first()
+        end_bus_stop = tem.bus_stop
+    return {
+        "id": result.id,
+        "bus_no": bus_no,
+        "starting_bus_stop": starting_bus_stop,
+        "end_bus_stop": end_bus_stop,
+        "timings_and_no_of_stop": result.timings_and_no_of_stop,
+    }
 
 
 def allowed_image(filename):

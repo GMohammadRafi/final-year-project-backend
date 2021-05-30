@@ -81,7 +81,7 @@ def get_user_details(user_type, user_id):
 
 
 @app.route('/<user_type>/get-user-details/<user_id>', methods=["POST"])
-def set_user_details(user_type,user_id):
+def set_user_details(user_type, user_id):
     name = request.form.get('name')
     phone_number = request.form.get('phone_number')
     new_password = request.form.get('new_password')
@@ -94,38 +94,33 @@ def set_user_details(user_type,user_id):
         return {
                    "message": "user do not exist"
                }, 409
-    elif check_password_hash(result.password, old_password):
-        hash_and_salted_password = generate_password_hash(
-            new_password,
-            method='pbkdf2:sha256',
-            salt_length=8
-        )
+    if name is not None or phone_number is not None:
+        result.name = name if name is not None else result.name
+        result.phone_number = phone_number if phone_number is not None else result.phone_number
+    if old_password is not None and new_password is not None:
+        if check_password_hash(result.password, old_password):
+            hash_and_salted_password = generate_password_hash(
+                new_password,
+                method='pbkdf2:sha256',
+                salt_length=8
+            )
+            result.password = hash_and_salted_password
+            return {
 
-        # user_data = ud.User(id=uid,
-        #                     name=name,
-        #                     email=email,
-        #                     phone_number=phone_number,
-        #                     password=hash_and_salted_password,
-        #                     amount=0,
-        #                     )
-        # else:
-        # user_data = cd.Conductor(id=uid,
-        #                          name=name,
-        #                          email=email,
-        #                          phone_number=phone_number,
-        #                          password=hash_and_salted_password,
-        #                          )
-    # return {
-    #     "user_id": uid,
-    #     "phone_number": phone_number,
-    #     "name": name,
-    #     "email": email,
-    #     "session_time": c.SESSION_TIME
-    # }
-    else:
-        return {
-                   "message": "Entered Password is wrong"
-               }, 403
+            }
+        else:
+            return {
+                       "message": "Entered Password is wrong"
+                   }, 403
+    db.session.commit()
+    return {
+        "user_id": result.id,
+        "phone_number": result.phone_number,
+        "name": result.name,
+        "email": result.email,
+        "session_time": c.SESSION_TIME
+    }
+
 
 
 @app.route('/<user_type>/login', methods=["POST"])
