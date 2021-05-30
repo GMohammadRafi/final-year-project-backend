@@ -40,7 +40,7 @@ def register(user_type):
                                 email=email,
                                 phone_number=phone_number,
                                 password=hash_and_salted_password,
-                                amount=200,
+                                amount=0,
                                 )
         else:
             user_data = cd.Conductor(id=uid,
@@ -58,6 +58,74 @@ def register(user_type):
             "email": email,
             "session_time": c.SESSION_TIME
         }
+
+
+@app.route('/<user_type>/get-user-details/<user_id>', methods=["GET"])
+def get_user_details(user_type, user_id):
+    if "user" == user_type:
+        result = ud.User.query.filter_by(email=user_id).first()
+    else:
+        result = cd.Conductor.query.filter_by(email=user_id).first()
+    if not result:
+        return {
+                   "message": "user not exist"
+               }, 409
+    else:
+        return {
+            "user_id": result.id,
+            "phone_number": result.phone_number,
+            "name": result.name,
+            "email": result.email,
+            "session_time": c.SESSION_TIME
+        }
+
+
+@app.route('/<user_type>/get-user-details/<user_id>', methods=["POST"])
+def set_user_details(user_type,user_id):
+    name = request.form.get('name')
+    phone_number = request.form.get('phone_number')
+    new_password = request.form.get('new_password')
+    old_password = request.form.get('old_password')
+    if "user" == user_type:
+        result = ud.User.query.filter_by(email=user_id).first()
+    else:
+        result = cd.Conductor.query.filter_by(email=user_id).first()
+    if not result:
+        return {
+                   "message": "user do not exist"
+               }, 409
+    elif check_password_hash(result.password, old_password):
+        hash_and_salted_password = generate_password_hash(
+            new_password,
+            method='pbkdf2:sha256',
+            salt_length=8
+        )
+
+        # user_data = ud.User(id=uid,
+        #                     name=name,
+        #                     email=email,
+        #                     phone_number=phone_number,
+        #                     password=hash_and_salted_password,
+        #                     amount=0,
+        #                     )
+        # else:
+        # user_data = cd.Conductor(id=uid,
+        #                          name=name,
+        #                          email=email,
+        #                          phone_number=phone_number,
+        #                          password=hash_and_salted_password,
+        #                          )
+    # return {
+    #     "user_id": uid,
+    #     "phone_number": phone_number,
+    #     "name": name,
+    #     "email": email,
+    #     "session_time": c.SESSION_TIME
+    # }
+    else:
+        return {
+                   "message": "Entered Password is wrong"
+               }, 403
 
 
 @app.route('/<user_type>/login', methods=["POST"])

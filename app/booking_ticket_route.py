@@ -1,13 +1,16 @@
 from app import app, generate_ids as gids, constants as c
-from database import book_ticket_database as brd, bus_route_database as busd, user_database as ud, db
+from database import book_ticket_database as brd, bus_route_database as busrd, user_database as ud, db, \
+    bus_stops_database as busd
 from flask import request
 from os import path, mkdir
 from werkzeug.utils import secure_filename
+from difflib import SequenceMatcher
+from datetime import datetime
+from pytz import timezone
 import json
 
-
 IMAGE_EXTENSIONS = ["JPEG", "JPG", "PNG"]
-
+time_zone = timezone('Asia/Kolkata')
 
 @app.route('/book-ticket/face-id', methods=["POST"])
 def upload_image():
@@ -43,23 +46,27 @@ def upload_image():
 @app.route('/book-ticket', methods=["POST"])
 def book_ticket():
     bus_booking_ticket: dict = json.loads(request.data)
-    ticket_id = []
-    for bus_detail in bus_booking_ticket['bus_details']:
-        ticket_id.append(ticket(bus_detail))
-    user_data: ud.User = ud.User.query.filter_by(id=bus_booking_ticket['user_id']).first()
-    if bus_booking_ticket['amount'] > user_data.amount:
+    bus_booking_ticket["busFromToDetails"] = json.loads(bus_booking_ticket["busFromToDetails"])
+    ticket_id: list = []
+    user_data: ud.User = ud.User.query.filter_by(id=bus_booking_ticket['userID']).first()
+    if bus_booking_ticket['total_cost'] > user_data.amount:
         return {
                    "message": "No enough amount in your account"
                }, 404
-    user_data.amount -= bus_booking_ticket['amount']
+    for bus_detail in bus_booking_ticket["busFromToDetails"]['bus_details']:
+        t = ticket(bus_detail)
+        ticket_id.append(t)
     new_book_ticket = brd.BookedTickets(
         id=gids.generate_id(brd.BookedTickets),
         user_id=user_data.id,
         tickets=ticket_id,
-        face_id=bus_booking_ticket['face_id'],
-        toatal_time=bus_booking_ticket['toatal_time'],
-        amount_payed=bus_booking_ticket['amount']
+        number_of_tickets=int(bus_booking_ticket['total_ticket']),
+        face_id=bus_booking_ticket['images'],
+        toatal_time=bus_booking_ticket["busFromToDetails"]['toatal_time'],
+        amount_payed=int(bus_booking_ticket['total_cost']),
+        booked_date_time=datetime.now(time_zone)
     )
+    user_data.amount -= bus_booking_ticket['total_cost']
     db.session.add(new_book_ticket)
     db.session.commit()
     return {
@@ -67,19 +74,57 @@ def book_ticket():
     }
 
 
+
+
+
+
 def ticket(bus_details: dict):
-    result: busd.BusRoute = busd.BusRoute.query.filter_by(bus_no=bus_details['bus_no']).first()
+    result: busrd.BusRoute = busrd.BusRoute.query.filter_by(
+        bus_no=str(bus_details['bus_no']).replace(" ", "").replace("-", "")).first()
+    end_bus_stop = bus_details['end_bus_stop']
+    starting_bus_stop = bus_details['starting_bus_stop']
+    print(f"Starting bus stop(Google): {starting_bus_stop}")
+    print(f"Ending bus stop(Google): {end_bus_stop}")
+    end_bus_stop_per = []
+    starting_bus_stop_per = []
+    max_end = 0
+    max_end_index = 0
+    max_start = 0
+    max_start_index = 0
+    bus_stop = []
+    if result:
+        for stop_id in result.list_of_bus_stops:
+            bus_stop_data: busd.BusStops = busd.BusStops.query.filter_by(id=stop_id["id"]).first()
+            bus_stop.append({"id": bus_stop_data.id, "bus_stop": bus_stop_data.bus_stop})
+            end_bus_stop_per.append(SequenceMatcher(None, bus_stop_data.bus_stop, end_bus_stop).ratio())
+            starting_bus_stop_per.append(SequenceMatcher(None, bus_stop_data.bus_stop, starting_bus_stop).ratio())
+        max_start = max(starting_bus_stop_per)
+        max_end = max(end_bus_stop_per)
+        max_start_index = starting_bus_stop_per.index(max_start)
+        max_end_index = end_bus_stop_per.index(max_end)
+        print(f"Max starting value: {max_start}")
+        print(f"Max ending value: {max_end}")
+        print(f"Starting bus stop(Database): {bus_stop[max_start_index]}")
+        print(f"Ending bus stop(Database): {bus_stop[max_end_index]}")
+    if max_end > 70 and max_start > 70:
+        if max_end_index > max_start_index:
+            origin = True
+        else:
+            origin = False
+    else:
+        origin = True
     user_data = brd.Ticket(
         id=gids.generate_id(brd.Ticket),
         bus_no=result.id if result else bus_details['bus_no'],
-        starting_bus_stop=bus_details['starting_bus_timing'],
-        end_bus_stop=bus_details['starting_bus_stop'],
+        end_bus_stop=bus_stop[max_end_index]["id"] if max_end > 0.7 else end_bus_stop,
+        starting_bus_stop=bus_stop[max_start_index]["id"] if max_start > 0.7 else starting_bus_stop,
         starting_bus_timing=bus_details['starting_bus_timing'],
         timings_and_no_of_stop=bus_details['timings_and_no_of_stop'],
+        origin_to_destination=origin
     )
     db.session.add(user_data)
     db.session.commit()
-    return id
+    return user_data.id
 
 
 def allowed_image(filename):
