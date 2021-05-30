@@ -75,22 +75,22 @@ def book_ticket():
     }
 
 
-@app.route('/get/book-ticket/<user_id>', methods=["POST"])
+@app.route('/get/book-ticket/<user_id>', methods=["GET"])
 def get_all_book_ticket(user_id):
     list_result: list = brd.BookedTickets.query.filter_by(user_id=user_id).all()
     if not list_result:
         return {
-                   "message": "user do not exist"
+                   "message": "No Booking"
                }, 409
 
-    return [{
+    return {"ticket": [{
         "id": result.id,
         "tickets": [get_ticket(ticket_id) for ticket_id in result.tickets],
         "amount_payed": result.amount_payed,
         "booked_date_time": result.booked_date_time,
         "number_of_tickets": result.number_of_tickets,
         "toatal_time": result.toatal_time,
-    } for result in list_result]
+    } for result in list_result]}
 
 
 def set_ticket(bus_details: dict):
