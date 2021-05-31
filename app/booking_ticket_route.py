@@ -93,6 +93,18 @@ def get_all_book_ticket(user_id):
     } for result in list_result]}
 
 
+@app.route('/delete/book-ticket/<book_ticker_id>', methods=["GET"])
+def delete_book_ticket(book_ticker_id):
+    result: brd.BookedTickets = brd.BookedTickets.query.filter_by(id=book_ticker_id).first()
+    for ticket in result.tickets:
+        brd.Ticket.query.filter_by(id=ticket).delete()
+    db.session.delete(result)
+    db.session.commit()
+    return {
+        "message": "Deleted successfully"
+    }
+
+
 def set_ticket(bus_details: dict):
     result: busrd.BusRoute = busrd.BusRoute.query.filter_by(
         bus_no=str(bus_details['bus_no']).replace(" ", "").replace("-", "")).first()

@@ -1,9 +1,15 @@
-from os import environ, path
-from flask import Flask, render_template
+from os import environ
+from flask import Flask
+from flask_login import LoginManager
+
 
 app = Flask('__name__')
+app.config['SECRET_KEY'] = 'secret-key-goes-here'
 app.config['SQLALCHEMY_DATABASE_URI'] = environ.get('DATABASE_URL') or 'sqlite:///mybmtc.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+login_manager = LoginManager()
+login_manager.init_app(app)
 
 import database
 

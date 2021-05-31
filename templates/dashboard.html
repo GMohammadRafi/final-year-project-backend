@@ -1,0 +1,124 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid">
+
+                    <!-- Page Heading -->
+                    <div class="d-sm-flex align-items-center justify-content-between mb-4">
+                        <h1 class="h3 mb-0 text-gray-800">Dashboard Screen</h1>
+
+                    </div>
+
+                    <!-- Content Row -->
+                    <div class="row">
+
+                        <!-- Earnings (Monthly) Card Example -->
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-primary shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-primary text-uppercase mb-1">
+                                                BUS ROUTES</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{details["bus_routes"]}}</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-route fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Earnings (Monthly) Card Example -->
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-success shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-success text-uppercase mb-1">
+                                                BUS STOPS</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{details["bus_stops"]}}</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-bus fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Earnings (Monthly) Card Example -->
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-info shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-info text-uppercase mb-1">CUSTOMER
+                                            </div>
+                                            <div class="row no-gutters align-items-center">
+                                                <div class="col-auto">
+                                                    <div class="h5 mb-0 mr-3 font-weight-bold text-gray-800">{{details["users"]}}</div>
+                                                </div>
+
+                                            </div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-user-friends fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Pending Requests Card Example -->
+                        <div class="col-xl-3 col-md-6 mb-4">
+                            <div class="card border-left-warning shadow h-100 py-2">
+                                <div class="card-body">
+                                    <div class="row no-gutters align-items-center">
+                                        <div class="col mr-2">
+                                            <div class="text-xs font-weight-bold text-warning text-uppercase mb-1">
+                                                CONDUCTOR</div>
+                                            <div class="h5 mb-0 font-weight-bold text-gray-800">{{details["conductorlo"]}}</div>
+                                        </div>
+                                        <div class="col-auto">
+                                            <i class="fas fa-user-cog fa-2x text-gray-300"></i>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Content Row -->
+
+
+                    <!-- Content Row -->
+
+
+
+
+                        <div class=" mb-4">
+
+                            <!-- Illustrations -->
+                            <div class="card shadow mb-4 ">
+                                <div class="card-header py-3">
+                                    <h6 class="m-0 font-weight-bold text-primary">ABOUT BMTC</h6>
+                                </div>
+                                <div class="card-body">
+                                    <div class="text-center">
+                                        <img class="img-fluid px-3 px-sm-4 mt-3 mb-4" style="width: 25rem;"
+                                            src="{{ url_for('static', filename='asset/undraw_Bus_stop_re_h8ej.svg') }}" alt="...">
+                                    </div>
+                                    <p>The Bengaluru Metropolitan Transport Corporation is the sole public bus transport provider for Bengaluru, serving urban, sub-urban and rural areas. BMTC is committed to provide quality, safe, reliable, clean and affordable travel. The testimony of its success lies in increasing passenger trips everyday by a wide range of customer base. In an effort to modernize its services for commuter comfort, BMTC strives to strengthen information systems and improve processes through introduction of intelligent technology solution, make capacity enhancement through infrastructure development, user-friendly interchange facilities, fleet upgradation and augmentation, apart from its core activities, which includes fare structuring, route network optimization, planning and monitoring. </p>
+                                    <a target="_blank" rel="nofollow" href="https://mybmtc.karnataka.gov.in/english">Go to MYBMTC official website &rarr;</a>
+                                </div>
+                            </div>
+
+                            <!-- Approach -->
+
+
+                        </div>
+
+
+                </div>
+{% endblock %}
