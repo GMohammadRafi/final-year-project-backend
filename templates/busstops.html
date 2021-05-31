@@ -22,83 +22,27 @@
                                     </thead>
 
                                     <tbody>
-                                        <tr>
-                                            <td>Devi Nagara,LOTTEGOLLAHALLI,BESIDE OPEN AREA</td>
-                                            <td>13.04686</td>
-                                            <td>77.56867</td>
-                                          <td><a href="#" data-toggle="modal" data-target="#updateModal"class="btn btn-success btn-icon-split">
-                                                  <span class="icon text-white-70">
-                                                      <i class="fas fa-pen"></i>
-                                                  </span>
-                                                  <span class="text">Update</span>
-                                              </a></td>
+                                      {%for data in bus_stop%}
 
-                                        </tr>
-                                        <tr>
-                                            <td>Devi Nagara,LOTTEGOLLAHALLI,BESIDE OPEN AREA</td>
-                                            <td>13.04686</td>
-                                            <td>77.56867</td>
-                                          <td><a href="#" data-toggle="modal" data-target="#updateModal"class="btn btn-success btn-icon-split">
-                                                  <span class="icon text-white-70">
-                                                      <i class="fas fa-pen"></i>
-                                                  </span>
-                                                  <span class="text">Update</span>
-                                              </a></td>
+                                      <tr>
+                                          <td>{{data.bus_stop}}</td>
+                                          <td>{{data.latitude}}</td>
+                                          <td>{{data.longitude}}</td>
+                                        <td><a href="#" data-toggle="modal" data-target="#updateModal"class="btn btn-success btn-icon-split">
+                                                <span class="icon text-white-70">
+                                                    <i class="fas fa-pen"></i>
+                                                </span>
+                                                <span class="text">Update</span>
+                                            </a></td>
+                                      </tr>
+                                      {%endfor%}
 
-                                        </tr>
-                                        <tr>
-                                            <td>Devi Nagara,LOTTEGOLLAHALLI,BESIDE OPEN AREA</td>
-                                            <td>13.04686</td>
-                                            <td>77.56867</td>
-                                              <td><a href="#" data-toggle="modal" data-target="#updateModal"class="btn btn-success btn-icon-split">
-                                                  <span class="icon text-white-70">
-                                                      <i class="fas fa-pen"></i>
-                                                  </span>
-                                                  <span class="text">Update</span>
-                                              </a></td>
 
-                                        </tr>
-                                        <tr>
-                                            <td>Devi Nagara,LOTTEGOLLAHALLI,BESIDE OPEN AREA</td>
-                                            <td>13.04686</td>
-                                            <td>77.56867</td>
-                                              <td><a href="#" data-toggle="modal" data-target="#updateModal"class="btn btn-success btn-icon-split">
-                                                  <span class="icon text-white-70">
-                                                      <i class="fas fa-pen"></i>
-                                                  </span>
-                                                  <span class="text">Update</span>
-                                              </a></td>
-
-                                        </tr>
-                                        <tr>
-                                            <td>Devi Nagara,LOTTEGOLLAHALLI,BESIDE OPEN AREA</td>
-                                            <td>13.04686</td>
-                                            <td>77.56867</td>
-                                            <td><a href="#" data-toggle="modal" data-target="#updateModal"class="btn btn-success btn-icon-split">
-                                                  <span class="icon text-white-70">
-                                                      <i class="fas fa-pen"></i>
-                                                  </span>
-                                                  <span class="text">Update</span>
-                                              </a></td>
-
-                                        </tr>
-                                        <tr>
-                                            <td>Devi Nagara,LOTTEGOLLAHALLI,BESIDE OPEN AREA</td>
-                                            <td>13.04686</td>
-                                            <td>77.56867</td>
-                                              <td><a href="#" data-toggle="modal" data-target="#updateModal"class="btn btn-success btn-icon-split">
-                                                  <span class="icon text-white-70">
-                                                      <i class="fas fa-pen"></i>
-                                                  </span>
-                                                  <span class="text">Update</span>
-                                              </a></td>
-
-                                        </tr>
                                     </tbody>
                                 </table>
                             </div>
                         </div>
                     </div>
 
-                </div>
+              
 {% endblock %}
