@@ -14,101 +14,35 @@
                                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
-                                            <th>Booked User Id</th>
-                                            <th>Bus No.</th>
+                                            <th>Booked User Name</th>
+                                            <th>Bus Nos</th>
                                             <th>Starting Bus Stop</th>
                                             <th>Ending Bus Stop</th>
-                                            <th>Bus Timing</th>
-                                            <th>Timing & no. of stops</th>
-                                            <th>face id</th>
-                                            <th>payment status</th>
-                                            <th>View Details</th>
+                                            <th>Bus Timings</th>
+                                            <th>Number Of Ticket</th>
+                                            <th>Amount Paid</th>
+                                            <th>Booked Date Time</th>
+                                            <th>Booked User Type</th>
                                         </tr>
                                     </thead>
 
                                     <tbody>
+                                      {%for data in bookedtickets%}
                                         <tr>
-                                            <td>e400013r4</td>
-                                            <td>362d</td>
-                                            <td>mekhri circle</td>
-                                            <td>yelhanka satellite town</td>
-                                            <td>2:40am-3:50am</td>
-                                            <td>22 hours(14)</td>
-                                            <td>aditya.jpeg</td>
-                                            <td>payment done</td>
-                                            <td><a href="#" data-toggle="modal" data-target="#viewModal"class="btn btn-info btn-icon-split">
-                                                <span class="icon text-white-50">
-                                                    <i class="fas fa-info-circle"></i>
-                                                </span>
-                                                <span class="text">View</span>
-                                            </a></td>
+                                            <td>{{data["user_name"]}}</td>
+                                            <td>{%for d in data["tickets"]%}
+                                              {{d["bus_no"]}},
+                                              {%endfor%}
+                                            </td>
+                                            <td>{{data["tickets"][0]["starting_bus_stop"]}}</td>
+                                            <td>{{data["tickets"][data["tickets"]|length - 1]["starting_bus_stop"]}}</td>
+                                            <td>{{data["toatal_time"]}}</td>
+                                            <td>{{data["number_of_tickets"]}}</td>
+                                            <td>{{data["amount_payed"]}}</td>
+                                            <td>{{data["booked_date_time"]}}</td>
+                                            <td>{{data["type_user"]}}</td>
                                         </tr>
-                                        <tr>
-                                            <td>e400013r4</td>
-                                            <td>362d</td>
-                                            <td>mekhri circle</td>
-                                            <td>yelhanka satellite town</td>
-                                            <td>2:40am-3:50am</td>
-                                            <td>22 hours(14)</td>
-                                            <td>aditya.jpeg</td>
-                                            <td>payment done</td>
-                                            <td><a href="#" data-toggle="modal" data-target="#viewModal"class="btn btn-info btn-icon-split">
-                                                <span class="icon text-white-50">
-                                                    <i class="fas fa-info-circle"></i>
-                                                </span>
-                                                <span class="text">View</span>
-                                            </a></td>
-
-                                        </tr>
-                                        <tr>
-                                            <td>e400013r4</td>
-                                            <td>362d</td>
-                                            <td>mekhri circle</td>
-                                            <td>yelhanka satellite town</td>
-                                            <td>2:40am-3:50am</td>
-                                            <td>22 hours(14)</td>
-                                            <td>aditya.jpeg</td>
-
-                                          <td>payment done</td>
-                                          <td><a href="#" data-toggle="modal" data-target="#viewModal"class="btn btn-info btn-icon-split">
-                                              <span class="icon text-white-50">
-                                                  <i class="fas fa-info-circle"></i>
-                                              </span>
-                                              <span class="text">View</span>
-                                          </a></td>
-                                        </tr>
-                                        <tr>
-                                            <td>e400013r4</td>
-                                            <td>362d</td>
-                                            <td>mekhri circle</td>
-                                            <td>yelhanka satellite town</td>
-                                            <td>2:40am-3:50am</td>
-                                            <td>22 hours(14)</td>
-                                            <td>aditya.jpeg</td>
-                                            <td>payment done</td>
-                                          <td><a href="#" data-toggle="modal" data-target="#viewModal"class="btn btn-info btn-icon-split">
-                                                <span class="icon text-white-50">
-                                                    <i class="fas fa-info-circle"></i>
-                                                </span>
-                                                <span class="text">View</span>
-                                            </a></td>
-                                        </tr>
-                                        <tr>
-                                            <td>e400013r4</td>
-                                            <td>362d</td>
-                                            <td>mekhri circle</td>
-                                            <td>yelhanka satellite town</td>
-                                            <td>2:40am-3:50am</td>
-                                            <td>22 hours(14)</td>
-                                            <td>aditya.jpeg</td>
-                                            <td>payment done</td>
-                                            <td><a href="#" data-toggle="modal" data-target="#viewModal"class="btn btn-info btn-icon-split">
-                                                <span class="icon text-white-50">
-                                                    <i class="fas fa-info-circle"></i>
-                                                </span>
-                                                <span class="text">View</span>
-                                            </a></td>
-                                        </tr>
+                                        {%endfor%}
 
 
                                     </tbody>

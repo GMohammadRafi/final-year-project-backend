@@ -5,7 +5,7 @@
                     <!-- Page Heading -->
                     <h1 class="h3 mb-2 text-gray-800">Customer Details</h1>
                   <p class="mb-4">The details usually tells the number of customer registed for the MyBMTC app. The admin have the permission to delete the particular record according to his choice. </p>
-
+                  
                     <!-- DataTales Example -->
                     <div class="card shadow mb-4">
 
@@ -14,99 +14,34 @@
                                 <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
                                     <thead>
                                         <tr>
+                                            <th>ID</th>
                                             <th>Name</th>
                                             <th>Email</th>
                                             <th>Phone</th>
-
+                                            <th>Amount In Wallet</th>
                                             <th>Delete Account</th>
 
                                         </tr>
                                     </thead>
 
                                     <tbody>
-                                        <tr>
-                                            <td>Aditya Singh</td>
-                                            <td>adityassingh01@gmail.com</td>
-                                            <td>9606661976</td>
-
-                                            <td><a href="#" data-toggle="modal" data-target="#deleteModal"class="btn btn-danger btn-icon-split">
+                                      {%for data in user%}
+                                        <tr id="tr{{data.id}}">
+                                            <td>{{data.id}}</td>
+                                            <td>{{data.name}}</td>
+                                            <td>{{data.email}}</td>
+                                            <td>{{data.phone_number}}</td>
+                                            <td>{{data.amount}}</td>
+                                            <td>
+                                              <a type="button" data-toggle="modal" class="btn btn-danger btn-icon-split view_data" id ="{{data.id}}">
                                                 <span class="icon text-white-70">
                                                     <i class="fas fa-trash"></i>
                                                 </span>
                                                 <span class="text">Remove</span>
-                                            </a></td>
+                                            </a>
+                                          </td>
                                         </tr>
-                                        <tr>
-                                            <td>Aditya Singh</td>
-                                            <td>adityassingh01@gmail.com</td>
-                                            <td>9606661976</td>
-
-                                              <td><a href="#" data-toggle="modal" data-target="#deleteModal"class="btn btn-danger btn-icon-split">
-                                                <span class="icon text-white-70">
-                                                    <i class="fas fa-trash"></i>
-                                                </span>
-                                                <span class="text">Remove</span>
-                                            </a></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Aditya Singh</td>
-                                            <td>adityassingh01@gmail.com</td>
-                                            <td>9606661976</td>
-
-                                              <td><a href="#" data-toggle="modal" data-target="#deleteModal"class="btn btn-danger btn-icon-split">
-                                                <span class="icon text-white-70">
-                                                    <i class="fas fa-trash"></i>
-                                                </span>
-                                                <span class="text">Remove</span>
-                                            </a></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Aditya Singh</td>
-                                            <td>adityassingh01@gmail.com</td>
-                                            <td>9606661976</td>
-
-                                              <td><a href="#" data-toggle="modal" data-target="#deleteModal"class="btn btn-danger btn-icon-split">
-                                                <span class="icon text-white-70">
-                                                    <i class="fas fa-trash"></i>
-                                                </span>
-                                                <span class="text">Remove</span>
-                                            </a></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Aditya Singh</td>
-                                            <td>adityassingh01@gmail.com</td>
-                                            <td>9606661976</td>
-
-                                              <td><a href="#" data-toggle="modal" data-target="#deleteModal"class="btn btn-danger btn-icon-split">
-                                                <span class="icon text-white-70">
-                                                    <i class="fas fa-trash"></i>
-                                                </span>
-                                                <span class="text">Remove</span>
-                                            </a></td>
-                                        </tr>
-                                        <tr>
-                                            <td>Aditya Singh</td>
-                                            <td>adityassingh01@gmail.com</td>
-                                            <td>9606661976</td>
-
-                                              <td><a href="#" data-toggle="modal" data-target="#deleteModal"class="btn btn-danger btn-icon-split">
-                                                <span class="icon text-white-70">
-                                                    <i class="fas fa-trash"></i>
-                                                </span>
-                                                <span class="text">Remove</span>
-                                            </a></td>
-                                        </tr><tr>
-                                            <td>Aditya Singh</td>
-                                            <td>adityassingh01@gmail.com</td>
-                                            <td>9606661976</td>
-
-                                              <td><a href="#" data-toggle="modal" data-target="#deleteModal"class="btn btn-danger btn-icon-split">
-                                                <span class="icon text-white-70">
-                                                    <i class="fas fa-trash"></i>
-                                                </span>
-                                                <span class="text">Remove</span>
-                                            </a></td>
-                                        </tr>
+                                      {%endfor%}
 
                                     </tbody>
                                 </table>
@@ -115,22 +50,48 @@
                     </div>
 
                 </div>
-<div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="exampleModalLabel">Are you sure you want to delete the record?</h5>
-                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">×</span>
-                    </button>
-                </div>
-                <div class="modal-body">Select "Delete" below if you are ready to delete your column now.</div>
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <a class="btn btn-danger del" href="customer.html">Delete</a>
-                </div>
-            </div>
-        </div>
-    </div>
+                <div class="modal fade" id="deleteModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
+                        aria-hidden="true">
+                        <div class="modal-dialog" role="document">
+                            <div class="modal-content">
+                                <div class="modal-header">
+                                    <h5 class="modal-title" id="exampleModalLabel">Are you sure you want to delete the record?</h5>
+                                    <button class="close" type="button" data-dismiss="modal" aria-label="Close">
+                                        <span aria-hidden="true">×</span>
+                                    </button>
+                                </div>
+                                <div class="modal-body">Select "Delete" below if you are ready to delete your column now.</div>
+                                <div class="modal-footer">
+                                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                                    <button id="delete" class="btn btn-danger del" data-dismiss="modal">Delete</button>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+{% endblock %}
+
+
+{% block jsscript %}
+<script>
+
+  $(document).ready(function(){
+  var bus_stop_id;
+   $(document).on('click', '.view_data', function(){
+    bus_stop_id = $(this).attr("id");
+    $('#deleteModal').modal('show');
+    console.log(bus_stop_id);
+   });
+
+$("#delete").on('click', function(){
+  req = $.ajax({
+   url:"/admin_customer/delete/"+bus_stop_id,
+   method:"DELETE",
+  });
+  $("#tr"+bus_stop_id).fadeOut(1000);
+  $("#tr"+bus_stop_id).hide();
+
+});
+  });
+</script>
 {% endblock %}

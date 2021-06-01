@@ -45,3 +45,6 @@ def root():
 
 
 from website import admin
+from website import admin_bus_stops
+from website import admin_bus_routes
+

@@ -5,7 +5,13 @@
                     <!-- Page Heading -->
                     <h1 class="h3 mb-2 text-gray-800">Bus Stops Details</h1>
                   <p class="mb-4">The details usually tells the number of Bus Stops registed for the MyBMTC app. The admin can view the particular Latitude and Longitude of the particular bus routes. </p>
-
+                  <!-- <p><a href="#" class="btn btn-primary btn-icon-split"> -->
+                                            <!-- <span class="icon text-white-50"> -->
+                                                <!-- <i class="fa fa-plus" ></i> -->
+                                            <!-- </span> -->
+                                            <!-- <span class="text">Add</span> -->
+                                        <!-- </a> -->
+                                        <!-- </p> -->
                     <!-- DataTales Example -->
                     <div class="card shadow mb-4">
 
@@ -24,15 +30,17 @@
                                     <tbody>
                                       {%for data in bus_stop%}
 
-                                      <tr>
-                                          <td>{{data.bus_stop}}</td>
-                                          <td>{{data.latitude}}</td>
-                                          <td>{{data.longitude}}</td>
-                                        <td><a href="#" data-toggle="modal" data-target="#updateModal" class="btn btn-success btn-icon-split">
+                                      <tr id="tr{{data.id}}">
+                                          <td id="bus_stop{{data.id}}">{{data.bus_stop}}</td>
+                                          <td id="latitude{{data.id}}">{{data.latitude}}</td>
+                                          <td id="longitude{{data.id}}">{{data.longitude}}</td>
+                                        <td>
+
+                                          <a type="button" class="btn btn-success btn-icon-split view_data" id ="{{data.id}}">
                                                 <span class="icon text-white-70">
                                                     <i class="fas fa-pen"></i>
                                                 </span>
-                                                <span class="text">Update</span>
+                                                <Span class="text">Update</span>
                                             </a></td>
                                       </tr>
 
@@ -45,8 +53,7 @@
                         </div>
                     </div>
 </div>
-<div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel"
-        aria-hidden="true">
+<div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -59,27 +66,68 @@
                   <div class="modal-body">
                     <div class="form-group">
                       <label>BUS STOP NAME</label>
-                      <input type="text" name="busstops" value="data.bus_stop" class="form-control" placeholder="Enter Bus Stop Name">
+                      <input id="bus_stop" type="text" name="busstops" value="" class="form-control" placeholder="Enter Bus Stop Name">
                     </div>
                     <div class="form-group">
                       <label>LATITUDE</label>
-                      <input type="text" name="latitude" value="data.latitude" class="form-control" placeholder="Enter preferred latitude">
+                      <input id="latitude" type="text" name="latitude" value="" class="form-control" placeholder="Enter preferred latitude">
                     </div>
                     <div class="form-group">
                       <label>LONGITUDE</label>
-                      <input type="text" name="longitude" value="data.longitude" class="form-control" placeholder="Enter preferred longitude">
+                      <input id="longitude" type="text" name="longitude" value="" class="form-control" placeholder="Enter preferred longitude">
                     </div>
                   </div>
+                  <div class="modal-footer">
+                      <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
+                      <button id="update" class="btn btn-success del" data-dismiss="modal" >Update</button>
+                  </div>
                 </form>
-
-                <div class="modal-footer">
-                    <button class="btn btn-secondary" type="button" data-dismiss="modal">Cancel</button>
-                    <a class="btn btn-success del" href="busstops.html">Update</a>
-                </div>
             </div>
         </div>
 </div>
-<script>
+{% endblock %}
 
+
+{% block jsscript %}
+<script>
+  $(document).ready(function(){
+  var bus_stop_id;
+   $(document).on('click', '.view_data', function(){
+    bus_stop_id = $(this).attr("id");
+    $.ajax({
+     url:"/admin_bus_stops/select/"+bus_stop_id,
+     method:"GET",
+     success:function(data){
+      $('#updateModal').modal('show');
+      var data_rs = JSON.parse(data);
+      $('#bus_stop').val(data_rs['bus_stop']);
+      $('#latitude').val(data_rs['latitude']);
+      $('#longitude').val(data_rs['longitude']);
+     }
+    });
+   });
+
+$("#update").on('click', function(){
+  var bus_stop = $('#bus_stop').val();
+  var latitude = $('#latitude').val();
+  var longitude = $('#longitude').val();
+  req = $.ajax({
+   url:"/admin_bus_stops/select/"+bus_stop_id,
+   method:"POST",
+   data: {
+    "bus_stop" :bus_stop,
+    "latitude":latitude,
+    "longitude":longitude
+   }
+  });
+  req.done(function(data){
+    $('#bus_stop'+bus_stop_id).text(data["bus_stop"]);
+    $('#latitude'+bus_stop_id).text(data["latitude"]);
+    $('#longitude'+bus_stop_id).text(data["longitude"]);
+  });
+  $("#tr"+bus_stop_id).fadeOut(1000).fadeIn(1000);
+
+});
+  });
 </script>
 {% endblock %}
