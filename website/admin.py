@@ -44,18 +44,9 @@ def admin_bus_routes():
     if not current_user.is_authenticated:
         return redirect(url_for('root'))
     bus_routes = db.session.query(brd.BusRoute).all()
-    route: brd.BusRoute
-    return_list = []
-    for route in bus_routes:
-        bus_route_temp = {"bus_no": route.bus_no, "distance": route.distance}
-        temp = []
-        for bus_stop_details in route.list_of_bus_stops:
-            result: bsd.BusStops
-            result = bsd.BusStops.query.filter_by(id=bus_stop_details["id"]).first()
-            temp.append(result.bus_stop)
-        bus_route_temp["list_of_bus_stops"] = temp
-        return_list.append(bus_route_temp)
-    return render_template("busroutes.html", name=current_user.name, bus_routes=return_list)
+    bus_stops = db.session.query(bsd.BusStops).all()
+    return render_template("busroutes.html", name=current_user.name, bus_routes=bus_routes, bus_stops=bus_stops,
+                           bus_stop_id=[bus_s.id for bus_s in bus_stops])
 
 
 @app.route('/admin_booked_ticket')
