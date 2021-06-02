@@ -63,9 +63,9 @@ def register(user_type):
 @app.route('/<user_type>/get-user-details/<user_id>', methods=["GET"])
 def get_user_details(user_type, user_id):
     if "user" == user_type:
-        result = ud.User.query.filter_by(email=user_id).first()
+        result = ud.User.query.filter_by(id=user_id).first()
     else:
-        result = cd.Conductor.query.filter_by(email=user_id).first()
+        result = cd.Conductor.query.filter_by(id=user_id).first()
     if not result:
         return {
                    "message": "user not exist"
@@ -87,9 +87,9 @@ def set_user_details(user_type, user_id):
     new_password = request.form.get('new_password')
     old_password = request.form.get('old_password')
     if "user" == user_type:
-        result = ud.User.query.filter_by(email=user_id).first()
+        result = ud.User.query.filter_by(id=user_id).first()
     else:
-        result = cd.Conductor.query.filter_by(email=user_id).first()
+        result = cd.Conductor.query.filter_by(id=user_id).first()
     if not result:
         return {
                    "message": "user do not exist"
@@ -97,7 +97,7 @@ def set_user_details(user_type, user_id):
     if name is not None or phone_number is not None:
         result.name = name if name is not None else result.name
         result.phone_number = phone_number if phone_number is not None else result.phone_number
-    if old_password is not None and new_password is not None:
+    if old_password is not "" and new_password is not "":
         if check_password_hash(result.password, old_password):
             hash_and_salted_password = generate_password_hash(
                 new_password,
@@ -120,7 +120,7 @@ def set_user_details(user_type, user_id):
 
 
 @app.route('/<user_type>/is-user/<user_id>', methods=["GET"])
-def login(user_type, user_id):
+def is_user_in_database(user_type, user_id):
     if "user" == user_type:
         result = ud.User.query.filter_by(id=user_id).first()
     else:
