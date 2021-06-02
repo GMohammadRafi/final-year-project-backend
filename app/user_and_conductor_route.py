@@ -80,7 +80,7 @@ def get_user_details(user_type, user_id):
         }
 
 
-@app.route('/<user_type>/get-user-details/<user_id>', methods=["POST"])
+@app.route('/<user_type>/set-user-details/<user_id>', methods=["POST"])
 def set_user_details(user_type, user_id):
     name = request.form.get('name')
     phone_number = request.form.get('phone_number')
@@ -105,9 +105,6 @@ def set_user_details(user_type, user_id):
                 salt_length=8
             )
             result.password = hash_and_salted_password
-            return {
-
-            }
         else:
             return {
                        "message": "Entered Password is wrong"
@@ -121,6 +118,21 @@ def set_user_details(user_type, user_id):
         "session_time": c.SESSION_TIME
     }
 
+
+@app.route('/<user_type>/is-user/<user_id>', methods=["GET"])
+def login(user_type, user_id):
+    if "user" == user_type:
+        result = ud.User.query.filter_by(id=user_id).first()
+    else:
+        result = cd.Conductor.query.filter_by(id=user_id).first()
+    if not result:
+        return {
+                   "message": "User Do Not Exist"
+               }, 403
+    else:
+        return {
+            "message": "User Do Exist"
+        }
 
 
 @app.route('/<user_type>/login', methods=["POST"])
