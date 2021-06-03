@@ -23,3 +23,4 @@ class BookedTickets(db.Model):
     toatal_time = db.Column(db.String(100), nullable=False)
     amount_payed = db.Column(db.Integer, nullable=False)
     booked_date_time = db.Column(db.DateTime, nullable=False)
+    status = db.Column(db.Boolean, nullable=False)

@@ -65,7 +65,8 @@ def book_ticket():
         face_id=bus_booking_ticket['images'],
         toatal_time=bus_booking_ticket["busFromToDetails"]['toatal_time'],
         amount_payed=int(bus_booking_ticket['total_cost']),
-        booked_date_time=datetime.now(time_zone)
+        booked_date_time=datetime.now(time_zone),
+        status=bool(0),
     )
     user_data.amount -= bus_booking_ticket['total_cost']
     db.session.add(new_book_ticket)
@@ -90,6 +91,7 @@ def get_all_book_ticket(user_id):
         "booked_date_time": result.booked_date_time,
         "number_of_tickets": result.number_of_tickets,
         "toatal_time": result.toatal_time,
+        "status": result.status,
     } for result in list_result]}
 
 
@@ -102,6 +104,16 @@ def delete_book_ticket(book_ticker_id):
     db.session.commit()
     return {
         "message": "Deleted successfully"
+    }
+
+
+@app.route('/cancel/book-ticket/<book_ticker_id>', methods=["GET"])
+def cancel_book_ticket(book_ticker_id):
+    result: brd.BookedTickets = brd.BookedTickets.query.filter_by(id=book_ticker_id).first()
+    result.status = bool(1)
+    db.session.commit()
+    return {
+        "message": "Canceled successfully"
     }
 
 
@@ -173,6 +185,7 @@ def get_ticket(bus_details: str):
         "bus_no": bus_no,
         "starting_bus_stop": starting_bus_stop,
         "end_bus_stop": end_bus_stop,
+        "staring_time": result.starting_bus_timing,
         "timings_and_no_of_stop": result.timings_and_no_of_stop,
     }
 
