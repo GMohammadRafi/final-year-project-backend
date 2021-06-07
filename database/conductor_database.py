@@ -18,3 +18,19 @@ class ConductorOTP(db.Model):
     sent_to = db.Column(db.String(100), nullable=False)
     expiry_time = db.Column(db.String(150), nullable=False)
     otp = db.Column(db.String(4), nullable=False)
+
+
+class RunningBuses(db.Model):
+    __tablename__ = 'RunningBuses'
+    id = db.Column(db.String(32), primary_key=True)
+    conductor_id = db.Column(db.String(32), ForeignKey('Conductor.id'))
+    bus_route_id = db.Column(db.String(32), ForeignKey('BusRoute.id'))
+    through_loc = db.Column(db.Boolean, nullable=False)
+
+
+class CurrentPosition(db.Model):
+    __tablename__ = 'CurrentPosition'
+    id = db.Column(db.String(32), primary_key=True)
+    running_buses_id = db.Column(db.String(32), ForeignKey('RunningBuses.id'))
+    passed_bus_stop_id = db.Column(db.String(32), ForeignKey('BusStops.id'))
+    next_bus_stop_id = db.Column(db.String(32), ForeignKey('BusStops.id'))
