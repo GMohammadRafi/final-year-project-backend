@@ -22,7 +22,6 @@
                                             <th>Number Of Ticket</th>
                                             <th>Amount Paid</th>
                                             <th>Booked Date Time</th>
-                                            <th>Booked User Type</th>
                                         </tr>
                                     </thead>
 
@@ -35,12 +34,11 @@
                                               {%endfor%}
                                             </td>
                                             <td>{{data["tickets"][0]["starting_bus_stop"]}}</td>
-                                            <td>{{data["tickets"][data["tickets"]|length - 1]["starting_bus_stop"]}}</td>
+                                            <td>{{data["tickets"][data["tickets"]|length - 1]["end_bus_stop"]}}</td>
                                             <td>{{data["toatal_time"]}}</td>
                                             <td>{{data["number_of_tickets"]}}</td>
                                             <td>{{data["amount_payed"]}}</td>
                                             <td>{{data["booked_date_time"]}}</td>
-                                            <td>{{data["type_user"]}}</td>
                                         </tr>
                                         {%endfor%}
 

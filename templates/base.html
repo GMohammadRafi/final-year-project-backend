@@ -10,7 +10,7 @@
     <meta name="author" content="">
 
     <title>BMTC Admin</title>
-
+<link rel="shortcut icon" type="image/png" href="{{ url_for('static', filename='asset/img/bmtclogowhite.png') }}"/>
     <!-- Custom fonts for this template-->
     <link href="{{ url_for('static', filename='vendor/fontawesome-free/css/all.min.css') }}" rel="stylesheet" type="text/css">
     <link href="{{ url_for('static', filename='vendor/datatables/dataTables.bootstrap4.min.css') }}" rel="stylesheet">
@@ -95,7 +95,12 @@
             <li class="nav-item">
                 <a class="nav-link" href="admin_booked_ticket">
                     <i class="fas fa-fw fa-ticket-alt"></i>
-                    <span>BOOKED TICKET STATUS</span></a>
+                    <span>BOOKED TICKET BY USER</span></a>
+            </li>
+            <li class="nav-item">
+                <a class="nav-link" href="booked_ticket_by_conductor">
+                    <i class="fas fa-fw fa-ticket-alt"></i>
+                    <span>BOOKED TICKET BY CONDUCTOR</span></a>
             </li>
             <!-- Nav Item - Tables -->
 

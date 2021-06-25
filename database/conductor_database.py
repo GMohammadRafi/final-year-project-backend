@@ -26,11 +26,15 @@ class RunningBuses(db.Model):
     conductor_id = db.Column(db.String(32), ForeignKey('Conductor.id'))
     bus_route_id = db.Column(db.String(32), ForeignKey('BusRoute.id'))
     through_loc = db.Column(db.Boolean, nullable=False)
+    status = db.Column(db.Boolean)
+    start_of_trip = db.Column(db.DateTime, nullable=False)
+    end_of_trip = db.Column(db.DateTime)
 
 
 class CurrentPosition(db.Model):
     __tablename__ = 'CurrentPosition'
     id = db.Column(db.String(32), primary_key=True)
-    running_buses_id = db.Column(db.String(32), ForeignKey('RunningBuses.id'))
+    conductor_id = db.Column(db.String(32), ForeignKey('Conductor.id'))
+    bus_route_id = db.Column(db.String(32), ForeignKey('BusRoute.id'))
     passed_bus_stop_id = db.Column(db.String(32), ForeignKey('BusStops.id'))
     next_bus_stop_id = db.Column(db.String(32), ForeignKey('BusStops.id'))

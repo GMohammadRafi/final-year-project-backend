@@ -1,0 +1,50 @@
+{% extends "base.html" %}
+{% block content %}
+<div class="container-fluid">
+
+                    <!-- Page Heading -->
+                    <h1 class="h3 mb-2 text-gray-800">Booked Ticket Status</h1>
+                  <p class="mb-4">The details usually tells the number of Bus Routes registed for the MyBMTC app. The admin can view the particular Latitude and Longitude of the particular bus routes. </p>
+
+                    <!-- DataTales Example -->
+                    <div class="card shadow mb-4">
+
+                        <div class="card-body">
+                            <div class="table-responsive">
+                                <table class="table table-bordered" id="dataTable" width="100%" cellspacing="0">
+                                    <thead>
+                                        <tr>
+                                            <th>Booked Conductor Name</th>
+                                            <th>Bus Nos</th>
+                                            <th>User Phone Number</th>
+                                            <th>Starting Bus Stop</th>
+                                            <th>Ending Bus Stop</th>
+                                            <th>Number Of Ticket</th>
+                                            <th>Amount Paid</th>
+                                            <th>Booked Date Time</th>
+                                        </tr>
+                                    </thead>
+
+                                    <tbody>
+                                      {%for data in bookedtickets%}
+                                        <tr>
+                                            <td>{{data["user_name"]}}</td>
+                                            <td>{{data["bus_no"]}}</td>
+                                            <td>{{data["phone_number"]}}</td>
+                                            <td>{{data["starting_bus_stop"]}}</td>
+                                            <td>{{data["end_bus_stop"]}}</td>
+                                            <td>{{data["number_of_tickets"]}}</td>
+                                            <td>{{data["amount_payed"]}}</td>
+                                            <td>{{data["booked_date_time"]}}</td>
+                                        </tr>
+                                        {%endfor%}
+
+
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+
+                </div>
+{% endblock %}

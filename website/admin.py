@@ -66,7 +66,25 @@ def admin_booked_ticket():
             "booked_date_time": result.booked_date_time,
             "number_of_tickets": result.number_of_tickets,
             "toatal_time": result.toatal_time,
-            "type_user":"Customer"
+        } for result in list_result])
+
+
+@app.route('/booked_ticket_by_conductor')
+def booked_ticket_by_conductor():
+    if not current_user.is_authenticated:
+        return redirect(url_for('root'))
+    list_result = db.session.query(btd.TicketsBookedByConductor).all()
+    result: btd.TicketsBookedByConductor
+    return render_template("bookedticketbyconductor.html", name=current_user.name, bookedtickets=[
+        {
+            "user_name": cd.Conductor.query.filter_by(id=result.conductor_id).first().name,
+            "bus_no": brd.BusRoute.query.filter_by(id=result.bus_no_id).first().bus_no,
+            "starting_bus_stop": bsd.BusStops.query.filter_by(id=result.starting_bus_id).first().bus_stop,
+            "end_bus_stop": bsd.BusStops.query.filter_by(id=result.end_bus_id).first().bus_stop,
+            "amount_payed": result.amount_payed,
+            "phone_number":result.phone_number,
+            "number_of_tickets": result.number_of_tickets,
+            "booked_date_time": result.booked_date_time,
         } for result in list_result])
 
 
