@@ -2,11 +2,8 @@ from database import app, db
 
 from flask import request
 from sqlalchemy import and_
-from app import generate_ids as gids
+from app import generate_ids as gids, constants as c
 from database import bus_stops_database as bsd
-
-LATITUDE = 0.00090053582
-LONGITUDE = 0.00113804251
 
 
 @app.route('/bmtc/add/new/bus-stop', methods=["POST"])
@@ -91,10 +88,10 @@ def bmtc_bus_stops(latitude, longitude):
         while len(all_near_by_bus_stop) < 10:
             all_near_by_bus_stop = []
             radius += 1
-            up_lim_latitude = float(latitude) + LATITUDE * radius
-            up_lim_longitude = float(longitude) + LONGITUDE * radius
-            lower_lim_latitude = float(latitude) - LATITUDE * radius
-            lower_lim_longitude = float(longitude) - LONGITUDE * radius
+            up_lim_latitude = float(latitude) + c.LATITUDE * radius
+            up_lim_longitude = float(longitude) + c.LONGITUDE * radius
+            lower_lim_latitude = float(latitude) - c.LATITUDE * radius
+            lower_lim_longitude = float(longitude) - c.LONGITUDE * radius
             result = bsd.BusStops.query.filter(and_(
                 lower_lim_latitude <= bsd.BusStops.latitude,
                 up_lim_latitude >= bsd.BusStops.latitude,

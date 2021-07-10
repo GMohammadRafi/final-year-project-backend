@@ -1,10 +1,10 @@
-from app import app, generate_ids as gids, constants  as c
+from app import app, generate_ids as gids, constants as c
 from os import path, listdir
 from flask import request
 from database import db, conductor_database as cd, bus_route_database as brd, bus_stops_database as bsd, \
     book_ticket_database as btd
 from datetime import datetime
-from sqlalchemy import or_
+from sqlalchemy import or_, and_
 from pytz import timezone
 
 time_zone = timezone('Asia/Kolkata')
@@ -43,7 +43,9 @@ def set_current_running_bus(conductor_id):
         r.end_of_trip = datetime.now(time_zone)
         result: cd.CurrentPosition = cd.CurrentPosition.query.filter_by(conductor_id=conductor_id).first()
         number_of_persons = setting_bus_stop_passed(result.bus_route_id, result.passed_bus_stop_id, through)
+        live_location_data = cd.LiveLocation.query.filter_by(conductor_id=conductor_id).first()
         db.session.delete(result)
+        db.session.delete(live_location_data)
         db.session.commit()
 
         return {"message": "Trip Completed", "number_of_persons": number_of_persons}
@@ -90,6 +92,76 @@ def live_location(bus_id):
     return {
         "active": result
     }
+
+
+@app.route('/conductor/set/location/<conductor_id>', methods=["POST"])
+def set_location(conductor_id):
+    starting_stop = request.form.get('starting_stop')
+    ending_stop = request.form.get('ending_stop')
+    bus_route_id = request.form.get('bus_route_id')
+    latitude = float(request.form.get('latitude'))
+    longitude = float(request.form.get('longitude'))
+    result: cd.LiveLocation = cd.LiveLocation.query.filter_by(conductor_id=conductor_id).first()
+    if result:
+        result.bus_route_id = bus_route_id
+        result.latitude = latitude
+        result.longitude = longitude
+        result.starting_stop = starting_stop
+        result.ending_stop = ending_stop
+        db.session.commit()
+    else:
+        result = cd.LiveLocation(id=gids.generate_id(cd.RunningBuses),
+                                 conductor_id=conductor_id,
+                                 bus_route_id=bus_route_id,
+                                 latitude=latitude,
+                                 longitude=longitude,
+                                 ending_stop=ending_stop,
+                                 starting_stop=starting_stop,
+                                 )
+        db.session.add(result)
+        db.session.commit()
+    return {
+        "id": result.id,
+        "bus_route_id": bus_route_id,
+        "latitude": latitude,
+        "longitude": longitude,
+    }
+
+
+@app.route('/location/<latitude>/<longitude>', methods=["GET"])
+def location(latitude, longitude):
+    try:
+        all_near_by_bus_stop = []
+        up_lim_latitude = float(latitude) + c.LATITUDE * 2
+        up_lim_longitude = float(longitude) + c.LONGITUDE * 2
+        lower_lim_latitude = float(latitude) - c.LATITUDE * 2
+        lower_lim_longitude = float(longitude) - c.LONGITUDE * 2
+        result = cd.LiveLocation.query.filter(and_(
+            lower_lim_latitude <= bsd.BusStops.latitude,
+            up_lim_latitude >= bsd.BusStops.latitude,
+            lower_lim_longitude <= bsd.BusStops.longitude,
+            up_lim_longitude >= bsd.BusStops.longitude
+        )).all()
+        data: cd.LiveLocation
+        for data in result:
+            all_near_by_bus_stop.append(
+                {
+                    "id": data.id,
+                    "bus_route_number": brd.BusRoute.query.filter_by(id=data.bus_route_id).first().bus_no,
+                    "latitude": data.latitude,
+                    "longitude": data.longitude,
+                    "starting_stop": data.starting_stop,
+                    "ending_stop": data.ending_stop,
+
+                })
+
+        return {
+            "list_of_buses": all_near_by_bus_stop
+        }
+    except:
+        return {
+                   "message": "No buses are running nearby!"
+               }, 404
 
 
 @app.route('/get/trip/<user_id>', methods=["GET"])
@@ -158,7 +230,7 @@ def setting_bus_stop_passed(bus_route_id, passed_bus_stop_id, through):
     ct: btd.TicketsBookedByConductor
     for ct in conductor_tickets:
         ct.status = 3
-        count += 1
+        count += ct.number_of_tickets
     db.session.commit()
     return count
 
@@ -207,8 +279,8 @@ def all_booked_tickets(conductor_id):
                     break
     except:
         return {
-            "message": "Something went wrong!"
-        }, 300
+                   "message": "Something went wrong!"
+               }, 300
     return {
         "tickets_by_conductor": tickets_by_conductor,
         "tickets_by_user": tickets_by_user,

@@ -217,7 +217,7 @@ def setting_booked_face_id(conductor_id):
                     face_ids.extend(b.face_id)
                     break
     except:
-        print("No route")
+        pass
     for d in face_ids:
         if d in all_images:
             index = all_images.index(d)

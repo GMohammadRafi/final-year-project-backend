@@ -38,3 +38,14 @@ class CurrentPosition(db.Model):
     bus_route_id = db.Column(db.String(32), ForeignKey('BusRoute.id'))
     passed_bus_stop_id = db.Column(db.String(32), ForeignKey('BusStops.id'))
     next_bus_stop_id = db.Column(db.String(32), ForeignKey('BusStops.id'))
+
+
+class LiveLocation(db.Model):
+    __tablename__ = 'LiveLocation'
+    id = db.Column(db.String(32), primary_key=True)
+    conductor_id = db.Column(db.String(32), ForeignKey('Conductor.id'))
+    bus_route_id = db.Column(db.String(32), ForeignKey('BusRoute.id'))
+    latitude = db.Column(db.Float, nullable=False)
+    longitude = db.Column(db.Float, nullable=False)
+    starting_stop = db.Column(db.String(100))
+    ending_stop = db.Column(db.String(100))
