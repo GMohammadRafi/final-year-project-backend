@@ -43,7 +43,7 @@ def set_current_running_bus(conductor_id):
         r.end_of_trip = datetime.now(time_zone)
         result: cd.CurrentPosition = cd.CurrentPosition.query.filter_by(conductor_id=conductor_id).first()
         number_of_persons = setting_bus_stop_passed(result.bus_route_id, result.passed_bus_stop_id, through)
-        live_location_data = cd.LiveLocation.query.filter_by(conductor_id=conductor_id).first()
+        live_location_data = cd.LiveLocation.query.filter_by(conductor_id=conductor_id).all()
         db.session.delete(result)
         db.session.delete(live_location_data)
         db.session.commit()
